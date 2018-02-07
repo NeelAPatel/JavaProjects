@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+ <?import view.Data?>
+ <?import javafx.scene.layout.HBox?>
+ <?import javafx.scene.control.Label?>
+
+<HBox  maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="540.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml" fx:id="hBox" >
+<children>
+    <Label  fx:id="lblSongItemName"/>
+    <Label  fx:id="lblSongItemArtist"/>
+</children>
+</HBox>
