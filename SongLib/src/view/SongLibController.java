@@ -34,33 +34,37 @@ public class SongLibController {
 	
 	@FXML Button btnAdd, btnEdit, btnDelete, btnSave, btnCancel;
 	
+	
 	//private ArrayList<SongMetadata> songLibArr; 
 	private ObservableList<SongMetadata> songMetaObservableList;        
-
+	private String editingMode = "blank";
+	
+	/**
+	 * Starts the layout and sets up listview 
+	 * @param mainStage 
+	 */
 	public void start(Stage mainStage) {
-		// create an ObservableList 
-		// from an ArrayList
-
+		
+		//MainStage parameters
 		mainStage.setTitle("Song Library by Neel Patel");
+		
+		//Set up Array for listview
 		ArrayList<SongMetadata> songLibArr = new ArrayList<SongMetadata>(0);
-		//createDummyList();
-
 		songMetaObservableList = FXCollections.observableList(songLibArr);
 		songListView.setItems(songMetaObservableList);
 		
-        songListView.setCellFactory(new Callback<ListView<SongMetadata>, javafx.scene.control.ListCell<SongMetadata>>()
-        {
+		//Sets listview's custom cell format
+        songListView.setCellFactory(new Callback<ListView<SongMetadata>, javafx.scene.control.ListCell<SongMetadata>>() {
             @Override
             public ListCell<SongMetadata> call(ListView<SongMetadata> listView)
             {
                 return new ListViewCell();
             }
         });
-		
 
-//        songListView.getSelectionModel().getSelectedItem() returns a SongMetadata item
         
         
+        //Populates Listview
         songListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<SongMetadata>() {
 			@Override
 			public void changed(ObservableValue<? extends SongMetadata> arg0, SongMetadata oldValue, SongMetadata newValue) {
@@ -72,20 +76,11 @@ public class SongLibController {
 			}
         });
 		
-		//songListView.setItems(obsList);
-		songListView.setEditable(true);
-		
-
-			
-		
-		//String x = "Index: " + e.getIndex() + " Value: " + e.getNewValue() ;
-		//lblTest.setText(x);
-		
-		lblDisplayName.setVisible(false);
-		lblDisplayAlbum.setVisible(false);
-		lblDisplayArtist.setVisible(false);
-		lblDisplayYear.setVisible(false);
-		
+        
+        
+        //UI Element Management
+		enableAllLabels();
+		disableAllTextFields();
 		
 		btnAdd.setVisible(true);
 		if (songMetaObservableList.size()> 0) {
@@ -99,81 +94,60 @@ public class SongLibController {
         btnSave.setVisible(false);
         btnCancel.setVisible(false);
 		
-		tfName.setDisable(true);
-		tfArtist.setDisable(true);
-		tfAlbum.setDisable(true);
-		tfYear.setDisable(true);
 	}
 	
 	@FXML
 	public void btnPress(ActionEvent e) {
 		Button btn = (Button) e.getSource();
-		if(btn == btnAdd) {
-			lblTest.setText("ADDINGGGG");
+		
+		if(btn == btnAdd) { // ADD BUTTON
+			lblTest.setText("Add Process started");
+			editingMode = "add";
 			
-			lblDisplayName.setVisible(false);
-			lblDisplayAlbum.setVisible(false);
-			lblDisplayArtist.setVisible(false);
-			lblDisplayYear.setVisible(false);
+			enableAllTextFields();
+			tfAlbum.setText(null);
+			tfArtist.setText(null);
+			tfName.setText(null);
+			tfYear.setText(null);
+			disableAllLabels();
 			
-			
-
-			
-			
-			tfName.setVisible(true);
-			tfArtist.setVisible(true);
-			tfAlbum.setVisible(true);
-			tfYear.setVisible(true);
-			
-			tfName.setDisable(false);
-			tfArtist.setDisable(false);
-			tfAlbum.setDisable(false);
-			tfYear.setDisable(false);
 			
             btnAdd.setVisible(false);
-			if (songMetaObservableList.size()> 0) {
-				btnEdit.setVisible(true);
-				btnDelete.setVisible(true);
-			}else
-			{
-				btnEdit.setVisible(false);
-				btnDelete.setVisible(false);
-			}
+			btnEdit.setVisible(false);
+			btnDelete.setVisible(false);
             btnSave.setVisible(true);
-            btnCancel.setVisible(false);
+            btnCancel.setVisible(true);
 			
-		}else if (btn == btnSave) {
-			SongMetadata newSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
-			//songLibArr.add(newSong);
-			//songListView.getItems().add(newSong);
-			songMetaObservableList.add(newSong);
-			songListView.refresh();
+		}else if (btn == btnSave) { //SAVE BUTTON
 			
+			//CREATE IF STATEMENT CONDITION TO PREVENT BLANK AND ALLOW IF NAME AND ARTIST EXIST
+			//USE STRING TO SET MODE
 
-			lblDisplayName.setVisible(true);
-			lblDisplayAlbum.setVisible(true);
-			lblDisplayArtist.setVisible(true);
-			lblDisplayYear.setVisible(true);
+			//Saves Song to ListView Array
 			
+			if (editingMode.equals("add")) {
+				SongMetadata newSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
+				songMetaObservableList.add(newSong);
+				songListView.refresh();
+			}
+			else if (editingMode.equals("edit")){
+				SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
+				selectedSong.setSongAlbum(songAlbum);
+				selectedSong.setSongArtist(songArtist);
+				selectedSong.setSongName(songName);
+				selectedSong.setSongYear(songYear);
+				
+			}
 			
-			tfName.setVisible(false);
-			tfArtist.setVisible(false);
-			tfAlbum.setVisible(false);
-			tfYear.setVisible(false);
+				
+			disableAllTextFields();
+			enableAllLabels();
 			
-			
-			tfName.setDisable(true);
-			tfArtist.setDisable(true);
-			tfAlbum.setDisable(true);
-			tfYear.setDisable(true);
-
-
 			btnAdd.setVisible(true);
 			if (songMetaObservableList.size()> 0) {
 				btnEdit.setVisible(true);
 				btnDelete.setVisible(true);
-			}else
-			{
+			}else{
 				btnEdit.setVisible(false);
 				btnDelete.setVisible(false);
 			}
@@ -190,9 +164,22 @@ public class SongLibController {
 			
 			lblTest.setText("btnSave Complete!" + songMetaObservableList.size());
 			
-		}else if (btn == btnEdit) {
+		}else if (btn == btnEdit) { //EDIT BUTTON
+			editingMode = "edit";
+			enableAllTextFields();
+			
+			disableAllLabels();
 
-
+			
+			SongMetadata current = songListView.getSelectionModel().getSelectedItem();
+			tfName.setText(current.getSongName());
+			tfAlbum.setText(current.getSongAlbum());
+			tfArtist.setText(current.getSongArtist());
+			tfYear.setText(current.getSongYear());
+			
+			
+			
+			
 			btnAdd.setVisible(false);
 			if (songMetaObservableList.size()> 0) {
 				btnEdit.setVisible(false);
@@ -253,6 +240,32 @@ public class SongLibController {
             btnSave.setVisible(false);
             btnCancel.setVisible(false);
 		}
+	}
+	
+	
+	private void disableAllTextFields() {
+		tfName.setVisible(false);
+		tfArtist.setVisible(false);
+		tfAlbum.setVisible(false);
+		tfYear.setVisible(false);
+	}
+	private void enableAllTextFields() {
+		tfName.setVisible(true);
+		tfArtist.setVisible(true);
+		tfAlbum.setVisible(true);
+		tfYear.setVisible(true);
+	}
+	private void disableAllLabels() {
+		lblDisplayName.setVisible(false);
+		lblDisplayAlbum.setVisible(false);
+		lblDisplayArtist.setVisible(false);
+		lblDisplayYear.setVisible(false);
+	}
+	private void enableAllLabels() {
+		lblDisplayName.setVisible(true);
+		lblDisplayAlbum.setVisible(true);
+		lblDisplayArtist.setVisible(true);
+		lblDisplayYear.setVisible(true);
 	}
 	
 	/*
