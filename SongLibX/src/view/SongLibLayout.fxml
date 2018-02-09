@@ -21,15 +21,22 @@
          <font>
             <Font size="20.0" />
          </font></Label>
-      <Label fx:id="lblName" layoutX="250.0" layoutY="61.0" text="Name" />
-      <Label fx:id="lblArtist" layoutX="250.0" layoutY="96.0" text="Artist" />
-      <Label fx:id="lblAlbum" layoutX="249.0" layoutY="131.0" text="Album" />
-      <Label fx:id="lblYear" layoutX="249.0" layoutY="166.0" text="Year" />
+         
+               <Label fx:id="lblA" layoutX="251.0" layoutY="61.0" text="Name" />
+      <Label fx:id="lblB" layoutX="250.0" layoutY="137.0" text="Album" />
+      <Label fx:id="lblC" layoutX="253.0" layoutY="98.0" text="Artist" />
+      <Label fx:id="lblD" layoutX="249.0" layoutY="166.0" text="Year" />
+         
+          <Label fx:id="lblTest" layoutX="280.0" layoutY="282.0" text="TESTER" />
+      <Label fx:id="lblDisplayName" layoutX="307.0" layoutY="61.0" text="Label" />
+      <Label fx:id="lblDisplayAlbum" layoutX="307.0" layoutY="98.0" text="Label" />
+      <Label fx:id="lblDisplayArtist" layoutX="307.0" layoutY="137.0" text="Label" />
+      <Label fx:id="lblDisplayYear" layoutX="307.0" layoutY="166.0" text="Label" />
       
-      <TextField fx:id="tfName" layoutX="299.0" layoutY="57.0" />
-      <TextField fx:id="tfArtist" layoutX="299.0" layoutY="92.0" />
-      <TextField fx:id="tfAlbum" layoutX="299.0" layoutY="127.0" />
-      <TextField fx:id="tfYear" layoutX="299.0" layoutY="162.0" />
+      <TextField fx:id="tfName" layoutX="299.0" layoutY="61.0" />
+      <TextField fx:id="tfArtist" layoutX="299.0" layoutY="96.0" />
+      <TextField fx:id="tfAlbum" layoutX="299.0" layoutY="131.0" />
+      <TextField fx:id="tfYear" layoutX="299.0" layoutY="166.0" />
       
       <Button fx:id="btnAdd" layoutX="21.0" layoutY="481.0" mnemonicParsing="false" onAction="#btnPress" prefHeight="25.0" prefWidth="61.0" text="Add" />
       <Button fx:id="btnEdit" layoutX="91.0" layoutY="481.0" mnemonicParsing="false" onAction="#btnPress" prefHeight="25.0" prefWidth="61.0" text="Edit" />
