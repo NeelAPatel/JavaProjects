@@ -1,16 +1,20 @@
-package application;
+package app;
 	
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import view.Controller;
+import view.SongLibController;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
-//Bharat Kumar
+/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */
 
-public class Main extends Application
+public class SongLib extends Application
 {
 	@Override
 	public void start(Stage primaryStage) 
@@ -22,10 +26,10 @@ public class Main extends Application
 			
 			AnchorPane root = (AnchorPane) loader.load();
 			
-			Controller control = loader.getController();
+			SongLibController control = loader.getController();
 			control.start(primaryStage);
 			
-			Scene scene = new Scene(root, 500, 300);
+			Scene scene = new Scene(root, 465, 530);
 			
 			primaryStage.setResizable(false);
 			primaryStage.setTitle("Songlib by Bharat Kumar and Neel Patel");

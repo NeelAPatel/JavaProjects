@@ -1,4 +1,4 @@
-package application;
+package view;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,7 +6,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-//Bharat Kumar & Neel Patel
+/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */
 
 /**
  * 

@@ -1,6 +1,6 @@
 package view;
 
-import application.*;
+import app.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,12 +12,17 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
+/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */
 
-//Bharat Kumar and Neel Patel
-
-public class Controller 
+public class SongLibController 
 {
 	@FXML private ListView<Song> songListView;
 	
@@ -139,7 +144,7 @@ public class Controller
 		showTextFields();
 		btnCancel.setVisible(true);
 		btnSave.setVisible(true);
-		btnSave.setText("+ Add +");
+		btnSave.setText("Save");
 		btnAdd.setVisible(false);
 		btnEdit.setVisible(false);
 	}
@@ -166,7 +171,7 @@ public class Controller
 		
 		btnCancel.setVisible(true);
 		btnSave.setVisible(true);
-		btnSave.setText("' Edit '");
+		btnSave.setText("Save");
 		btnEdit.setVisible(false);
 		btnAdd.setVisible(false);
 	}
@@ -279,7 +284,9 @@ public class Controller
 		{
 			currentIndex = database.addSongWithIndex(song);
 			insertDataIntoList();
-			songListView.getSelectionModel().select(currentIndex);
+			songListView.requestFocus();
+			songListView.refresh();
+			songListView.getSelectionModel().select(song);
 			showDetails(song);
 		} catch(IOException ioException)
 		{
@@ -340,9 +347,12 @@ public class Controller
 		
 		insertDataIntoList();
 		
-		btnDelete.setLayoutX(btnCancel.getLayoutX());
-		btnDelete.setLayoutY(btnCancel.getLayoutY());
-		btnDelete.setVisible(false);
+		//btnDelete.setLayoutX(btnCancel.getLayoutX());
+		//btnDelete.setLayoutY(btnCancel.getLayoutY());
+		if (songListView.getSelectionModel().getSelectedIndex()> 0)
+			btnDelete.setVisible(true);
+		else
+			btnDelete.setVisible(false);
 		
 		btnSave.setVisible(false);
 		btnCancel.setVisible(false);
@@ -364,6 +374,16 @@ public class Controller
 			songListView.getSelectionModel().select(currentIndex);
 		}
 		
+		
+		//Sets listview's custom cell format
+        songListView.setCellFactory(new Callback<ListView<Song>, javafx.scene.control.ListCell<Song>>() {
+            @Override
+            public ListCell<Song> call(ListView<Song> listView)
+            {
+                return new ListViewCell();
+            }
+        });
+
 		
 		songListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Song>() 
 		{
@@ -396,28 +416,59 @@ public class Controller
 		{
 			try
 			{
-				database.removeSong(currentIndex);
-				insertDataIntoList();
-				
-				if (database.getSize() == 0)
-				{
-					btnDelete.setVisible(false);
-					btnEdit.setVisible(false);
-					hideDetails();
-					lblName.setVisible(false);
-					lblArtist.setVisible(false);
-					lblAlbum.setVisible(false);
-					lblYear.setVisible(false);
+				Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this item?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+				alert.showAndWait();
+
+				if (alert.getResult() == ButtonType.YES) {
+
+					System.out.println("ATHIS IS CURRENT INDEX: " + currentIndex);
+					Song currentSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
+					Song previousSong;
+					if (songListView.getItems().size()> 0) {
+						previousSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex() - 1 ); 
+					}				
+					else {
+						previousSong = null;
+					}
+						
+					database.removeSong(currentIndex);
+					insertDataIntoList();
+					
+					if (database.getSize() == 0)
+					{
+						btnDelete.setVisible(false);
+						btnEdit.setVisible(false);
+						hideDetails();
+						lblName.setVisible(false);
+						lblArtist.setVisible(false);
+						lblAlbum.setVisible(false);
+						lblYear.setVisible(false);
+					}
+
+					System.out.println("BTHIS IS CURRENT INDEX: " + currentIndex);
+					if (currentIndex == database.getSize())
+					{
+						currentIndex = currentIndex - 1;
+					}
+
+					System.out.println("CTHIS IS CURRENT INDEX: " + currentIndex);
+					//currentSong = obsList.get(currentIndex);
+
+					System.out.println("DTHIS IS CURRENT INDEX: " + currentIndex);
+
+					
+					//songListView.getSelectionModel().select(currentSong);
+					songListView.requestFocus();
+					songListView.refresh();
+					System.out.println("ETHIS IS CURRENT INDEX: " + currentIndex);
+					songListView.getSelectionModel().select(previousSong);
+					showDetails(previousSong);
+					
+				}
+				else {
+					//Do nothing. 
 				}
 				
-				if (currentIndex == database.getSize())
-				{
-					currentIndex = currentIndex - 1;
-				}
-				
-				currentSong = obsList.get(currentIndex);
-				songListView.getSelectionModel().select(currentIndex);
-				showDetails(currentSong);
 			} catch(IOException ioException)
 			{
 				

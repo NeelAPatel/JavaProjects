@@ -1,6 +1,10 @@
-package application;
+package view;
 
-//Bharat Kumar
+/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */
 
 public class Song 
 {

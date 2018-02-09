@@ -1,5 +1,9 @@
-package application;
-
+package view;
+/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */
 public class Node<T>
 {
 	private T data;

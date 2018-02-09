@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */   -->
+
+<!-- <?import view.Data?> -->
+
+<?import view.CellData?> <!--  REMOVE THIS LINE IF YOU WANT TO OPEN USING SCENEBUILDER -->
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- 
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+
+<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="20.0" prefWidth="113.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:id="hBox" >
+   <children>
+      <Label fx:id="lblSongItemName" text="Label" />
+      <Label fx:id="lblSongItemArtist" text="Label" />
+   </children>
+</HBox> -->
+
+<VBox fx:id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="lblSongItemName" text="Label" />
+      <Label fx:id="lblSongItemArtist" text="Label" />
+   </children>
+</VBox>
