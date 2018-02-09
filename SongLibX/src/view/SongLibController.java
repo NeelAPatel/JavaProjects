@@ -132,11 +132,15 @@ public class SongLibController {
 			}
 			else if (editingMode.equals("edit")){
 				SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
-				selectedSong.setSongAlbum(songAlbum);
-				selectedSong.setSongArtist(songArtist);
-				selectedSong.setSongName(songName);
-				selectedSong.setSongYear(songYear);
-				
+				selectedSong.setSongAlbum(tfAlbum.getText());
+				selectedSong.setSongArtist(tfArtist.getText());
+				selectedSong.setSongName(tfName.getText());
+				selectedSong.setSongYear(tfYear.getText());
+				songListView.refresh();
+				lblDisplayName.setText(selectedSong.getSongName());
+				lblDisplayArtist.setText(selectedSong.getSongArtist());
+				lblDisplayAlbum.setText(selectedSong.getSongAlbum());
+				lblDisplayYear.setText(selectedSong.getSongYear());
 			}
 			
 				
@@ -206,14 +210,20 @@ public class SongLibController {
 				}
 	        });
 			
-			Alert alert = new Alert(AlertType.CONFIRMATION, "Delete " + lblDisplayName.getText() + " by " + lblDisplayArtist.getText() + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
+	        
+	        SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
+			Alert alert = new Alert(AlertType.CONFIRMATION, "Delete " + selectedSong.getSongName() + " by " + selectedSong.getSongArtist() + " ?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
 			alert.showAndWait();
 
 			if (alert.getResult() == ButtonType.YES) {
-			    lblTest.setText("Delete=> Clicked Yes");
+			    lblTest.setText("Delete=> Clicked Yes"+ songListView.getItems().size());
+			    songListView.getItems().remove(selectedSong);
+			    songListView.refresh();
 			}
-			else
-				lblTest.setText("Delete=> Clicked No");
+			else {
+				lblTest.setText("Delete=> Clicked No" + songListView.getItems().size());
+				songListView.refresh();
+			}
 			
 			
 			
@@ -228,7 +238,7 @@ public class SongLibController {
 				btnEdit.setVisible(false);
 				btnDelete.setVisible(false);
 			}
-            btnSave.setVisible(true);
+            btnSave.setVisible(false);
             btnCancel.setVisible(false);
 			
 		}else if (btn == btnCancel) {
