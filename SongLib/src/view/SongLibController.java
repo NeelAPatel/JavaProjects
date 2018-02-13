@@ -18,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -87,6 +88,7 @@ public class SongLibController {
 		
         
         if (!songListView.getItems().isEmpty()) {
+        	obsList.sort(new SongCompare());
         	songListView.refresh();
         	songListView.requestFocus();
         	songListView.getSelectionModel().select(0);
@@ -262,7 +264,7 @@ public class SongLibController {
 	private void saveAddSong() {
 		
 		String x = tfYear.getText();
-		System.out.println("[" + x + "]");
+		//System.out.println("[" + x + "]");
 		
 		if ((isInteger(tfYear.getText()) &&  (Integer.parseInt(tfYear.getText()) >= 0)) || x.equals("")) {
 			SongMetadata newSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
@@ -315,13 +317,20 @@ public class SongLibController {
 	private void saveEditSong() {
 
 		String x = tfYear.getText();
-		System.out.println("[" + x + "]");
+		//System.out.println("[" + x + "]");
 		
 		if ((isInteger(tfYear.getText()) &&  (Integer.parseInt(tfYear.getText()) >= 0)) || x.equals("")) {
 
 			SongMetadata editedSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
-			if (!songListView.getItems().contains(editedSong)){
-				SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
+			
+			
+			SongMetadata selectedSong = songListView.getSelectionModel().getSelectedItem();
+			int selectedIndex = songListView.getSelectionModel().getSelectedIndex();
+			
+			
+			if ((selectedSong.equals(editedSong)) || (!songListView.getItems().contains(editedSong)))
+				{
+				//SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
 				selectedSong.setSongAlbum(tfAlbum.getText());
 				selectedSong.setSongArtist(tfArtist.getText());
 				selectedSong.setSongName(tfName.getText());
@@ -401,27 +410,70 @@ public class SongLibController {
 			return;
 		}
 		
-		
+		int lineCount = 0;
 		while (scan.hasNextLine()){
-			 String[] songLine = scan.nextLine().split(",");
-			 if (songLine.length != 4) {
-				System.out.println("Error: Line length is not 4. Cannot import last session.");
+			
+			String[] songLine = scan.nextLine().split(",");
+			if (songLine.length != 4) {
+				
+				Alert alert = new Alert(AlertType.ERROR, "[Line " + lineCount + "]: Song does not have 4 items. Cannot import list of songs. "
+						+ "Please open songs.txt in Eclipse to fix the data.", ButtonType.CLOSE);
+				alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+				alert.showAndWait();
 				System.exit(0);
-			 }
-			 else {
+			}
+			else { // song has 4 items. 
+			 
+				if (songLine[0].equals("")) {
+					Alert alert = new Alert(AlertType.ERROR, "[Line " + lineCount + "]: Missing song Name. Cannot import list of songs. "
+							+ "Please open songs.txt in Eclipse to fix the data.", ButtonType.CLOSE);
+					alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+					alert.showAndWait();
+					System.exit(0);
+				}
+				
+				if (songLine[1].equals("")) {
+					Alert alert = new Alert(AlertType.ERROR, "[Line " + lineCount + "]: Missing song Album. Cannot import list of songs. "
+							+ "Please open songs.txt in Eclipse to fix the data.", ButtonType.CLOSE);
+					alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+					alert.showAndWait();
+					System.exit(0);
+				}
+				
+				
+				
+				
+				String a = songLine[2];
+				String b = songLine[3];
+				
+				if (songLine[2].equals("null")) {
+					a = "";
+				}
+				if (songLine[3].equals("null")) {
+					b= "";
+				}
+				try {
+					Integer.parseInt(b);
+				}
+				catch ( NumberFormatException e){
+					System.out.println("ERROR: NumberFormatException");
+					System.exit(0);
+				}
+				SongMetadata importedSong = new SongMetadata(songLine[0], songLine[1], a, b);
+				
+				if (obsList.contains(importedSong)) {
+					Alert alert = new Alert(AlertType.ERROR, "[Line " + lineCount + "]: Duplicate Songs detected. Cannot import list of songs. "
+							+ "Please open songs.txt in Eclipse to fix the data.", ButtonType.CLOSE);
+					alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+					alert.showAndWait();
+					System.exit(0);
+				}
+				else{
+					obsList.add(importedSong);
+				}
+				
+				
 				 
-				 String a = songLine[2];
-				 String b = songLine[3];
-				 
-				 if (songLine[2].equals("null")) {
-					 a = "";
-				 }
-				 if (songLine[3].equals("null")) {
-					 b= "";
-				 }
-				 
-				 SongMetadata importedSong = new SongMetadata(songLine[0], songLine[1], a, b);
-				 obsList.add(importedSong);
 			 }
 			 
 		}
@@ -447,7 +499,7 @@ public class SongLibController {
 				exportAlbum = "null";
 			}
 			
-			System.out.println("eName " + exportName + " eArtist " + exportArtist +" eAlbum " +exportAlbum + " eYear" + exportYear);
+		//	System.out.println("eName " + exportName + " eArtist " + exportArtist +" eAlbum " +exportAlbum + " eYear" + exportYear);
 			if (exportYear.equals("")) {
 				exportYear = "null";
 			}

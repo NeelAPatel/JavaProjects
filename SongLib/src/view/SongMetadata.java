@@ -1,3 +1,6 @@
+/* Neel Patel - Bharat Kumar
+ * Software Methodology Spring 2018
+ */
 package view;
 
 public class SongMetadata {
