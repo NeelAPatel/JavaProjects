@@ -1,10 +1,6 @@
-package view;
+package application;
 
-/*
- * Neel Patel 
- * Bharat Kumar
- * Spring 2018 - Software Methodology
- */
+//Bharat Kumar
 
 public class LinkedList
 {

@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--/*
+ * Neel Patel 
+ * Bharat Kumar
+ * Spring 2018 - Software Methodology
+ */   -->
+
 <!-- <?import view.Data?> -->
+
+<?import view.Data?> <!--  REMOVE THIS LINE IF YOU WANT TO OPEN USING SCENEBUILDER -->
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>

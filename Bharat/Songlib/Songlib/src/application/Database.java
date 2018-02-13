@@ -1,4 +1,4 @@
-package view;
+package application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,11 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-/*
- * Neel Patel 
- * Bharat Kumar
- * Spring 2018 - Software Methodology
- */
+//Bharat Kumar & Neel Patel
 
 /**
  * 
@@ -140,28 +136,6 @@ public class Database
 		return number;
 	}
 	
-	/**
-	 * 
-	 * @param name
-	 * @param artist
-	 * @param album
-	 * @param year
-	 * @throws IOException
-	 * Adds a song with the given parameters
-	 */
-	public void addSong(String name, String artist, String album, int year) throws IOException
-	{
-		Song song = new Song(name, artist, album, year);
-		this.linkedList.addItem(song);
-		try
-		{
-			this.refresh();
-		} catch(IOException ioException)
-		{
-			throw ioException;
-		}
-	}
-	
 	public boolean contains(String songName, String songArtist)
 	{
 		Node<Song> ptr = this.linkedList.getRoot();
@@ -175,21 +149,10 @@ public class Database
 		return false;
 	}
 	
-	public void addSong(Song song) throws IOException
-	{
-		this.linkedList.addItem(song);
-		try
-		{
-			this.refresh();
-		} catch(IOException ioException)
-		{
-			throw ioException;
-		}
-	}
-	
 	public int addSongWithIndex(Song song) throws IOException
 	{
-		int index = this.linkedList.addItemWithIndex(song) + 1;
+		int index = this.linkedList.addItemWithIndex(song);
+		
 		try
 		{
 			this.refresh();
@@ -200,22 +163,26 @@ public class Database
 		return index;
 	}
 	
-	public void removeSong(String name, String artist, String album, int year) throws IOException
-	{
-		Song song = new Song(name, artist, album, year);
-		this.linkedList.deleteItem(song);
-		try
-		{
-			this.refresh();
-		} catch (IOException ioException)
-		{
-			throw ioException;
-		}
-	}
-	
 	public void removeSong(int index) throws IOException
 	{
 		this.linkedList.deleteIndex(index);
+		
+		if (this.linkedList.getSize() == 0)
+		{
+			FileWriter fileWriter = null;
+			try
+			{
+				fileWriter = new FileWriter(file);
+			} catch(IOException ioException)
+			{
+				throw ioException;
+			}
+			
+			fileWriter.write("");
+			fileWriter.close();
+			return;
+		}
+		
 		try
 		{
 			this.refresh();
@@ -225,10 +192,11 @@ public class Database
 		}
 	}
 	
-	public void editSong(int index, Song song) throws IOException
+	public int editSongWithIndex(int index, Song song) throws IOException
 	{
 		this.linkedList.deleteIndex(index);
-		this.linkedList.addItem(song);
+		int i = this.linkedList.addItemWithIndex(song);
+		
 		try
 		{
 			this.refresh();
@@ -236,6 +204,8 @@ public class Database
 		{
 			throw ioException;
 		}
+		
+		return i;
 	}
 	
 	public void refresh() throws IOException
@@ -266,10 +236,5 @@ public class Database
 	public boolean isEmpty()
 	{
 		return (this.linkedList.getSize() == 0);
-	}
-	
-	public static void main(String[] args)
-	{
-		
 	}
 }

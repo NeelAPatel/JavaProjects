@@ -4,14 +4,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
 import java.io.IOException;
-/*
- * Neel Patel 
- * Bharat Kumar
- * Spring 2018 - Software Methodology
- */
-public class CellData
+
+public class Data
 {
     @FXML
     private VBox vBox;
@@ -20,7 +15,7 @@ public class CellData
     @FXML
     private Label lblSongItemArtist;
 
-    public CellData()
+    public Data()
     {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ListViewCellLayout.fxml"));
         fxmlLoader.setController(this);
@@ -34,10 +29,10 @@ public class CellData
         }
     }
 
-    public void setInfo(Song songItem)
+    public void setInfo(SongMetadata songItem)
     {
-    	lblSongItemName.setText(songItem.getName());
-    	lblSongItemArtist.setText(songItem.getArtist());
+    	lblSongItemName.setText(songItem.getSongName());
+    	lblSongItemArtist.setText(songItem.getSongArtist());
     }
     
     

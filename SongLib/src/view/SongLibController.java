@@ -4,16 +4,12 @@
 package view;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,17 +18,13 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ListView.EditEvent;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
-
 
 public class SongLibController {
 	@FXML ListView<SongMetadata> songListView;
 	
-	@FXML Label title, lblTest;
+	@FXML Label title;
 	@FXML Label lblA, lblB, lblC, lblD;
 	@FXML Label lblDisplayName, lblDisplayAlbum, lblDisplayArtist, lblDisplayYear;
 	
@@ -47,10 +39,9 @@ public class SongLibController {
 
 	String fileName = "songs.txt";
 	private File file = new File(fileName);
-	/**
-	 * Starts the layout and sets up listview 
-	 * @param mainStage 
-	 */
+
+	
+	// Start Method
 	public void start(Stage mainStage) {
 
 		//MainStage parameters
@@ -62,6 +53,7 @@ public class SongLibController {
 		ArrayList<SongMetadata> songLibArr = new ArrayList<SongMetadata>(0);
 		obsList = FXCollections.observableList(songLibArr);
 		try {
+			file = new File(fileName);
 			importFromFile(file);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -79,14 +71,10 @@ public class SongLibController {
         });
 
         
-        
         //Populates Listview
         songListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<SongMetadata>() {
 			@Override
 			public void changed(ObservableValue<? extends SongMetadata> arg0, SongMetadata oldValue, SongMetadata newValue) {
-				// TODO Auto-generated method stub
-				
-				
 				if (newValue != null) {
 					lblDisplayName.setText(newValue.getSongName());
 					lblDisplayAlbum.setText(newValue.getSongAlbum());
@@ -98,6 +86,11 @@ public class SongLibController {
         });
 		
         
+        if (!songListView.getItems().isEmpty()) {
+        	songListView.refresh();
+        	songListView.requestFocus();
+        	songListView.getSelectionModel().select(0);
+        }
         
         //UI Element Management
 		enableAllLabels();
@@ -117,17 +110,15 @@ public class SongLibController {
 		
 	}
 
+	// Button press action
 	@FXML
 	public void btnPress(ActionEvent e) {
-		Button btn = (Button) e.getSource();	
-		if(btn == btnAdd) { // ADD BUTTON
-			addButtonProcess();
-		}else if (btn == btnSave) { //SAVE BUTTON
-			
-			//CREATE IF STATEMENT CONDITION TO PREVENT BLANK AND ALLOW IF NAME AND ARTIST EXIST
-			//USE STRING TO SET MODE
-
-			//Saves Song to ListView Array
+		Button btn = (Button) e.getSource();
+		
+		if(btn == btnAdd) { 
+			addButtonProcess(); // ADD BUTTON
+		}
+		else if (btn == btnSave) { //SAVE BUTTON
 			if (checkSongParams(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText())) {
 				if (editingMode.equals("add")) 
 					saveAddSong();
@@ -137,40 +128,22 @@ public class SongLibController {
 		}else if (btn == btnEdit) { //EDIT BUTTON
 			editButtonProcess();
 		}else if (btn == btnDelete) {
-			  deleteButtonProcess();
-			
+			deleteButtonProcess();
 		}else if (btn == btnCancel) {
-
-			disableAllTextFields();
-			
-			tfName.setText("");
-			tfArtist.setText("");
-			tfAlbum.setText("");
-			tfYear.setText("");
-			
-            btnAdd.setVisible(true);
-            btnEdit.setVisible(false);
-            btnDelete.setVisible(false);
-            btnSave.setVisible(false);
-            btnCancel.setVisible(false);
+			cancelButtonProcess();
 		}
-		
-		
-
-		
 	}
 	
-	
+	// Button processes
 	private void addButtonProcess() {
 		songListView.setDisable(true);
-		lblTest.setText("Add Process started");
 		editingMode = "add";
 		
 		enableAllTextFields();
-		tfAlbum.setText(null);
-		tfArtist.setText(null);
-		tfName.setText(null);
-		tfYear.setText(null);
+		tfAlbum.setText("");
+		tfArtist.setText("");
+		tfName.setText("");
+		tfYear.setText("");
 		disableAllLabels();
 		
 		
@@ -184,7 +157,6 @@ public class SongLibController {
 	}
 	private void editButtonProcess() {
 		songListView.setDisable(true);
-		lblTest.setText("Edit Process started");
 		editingMode = "edit";
 		enableAllTextFields();
 		
@@ -215,25 +187,36 @@ public class SongLibController {
 
 	}
 	private void deleteButtonProcess() {
-		lblTest.setText("Delete Process started");
 		songListView.setDisable(true);
 		Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this item?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
 		alert.showAndWait();
 		
 		if (alert.getResult() == ButtonType.YES) {
 			SongMetadata currentSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
-			SongMetadata previousSong = null;
-			if (songListView.getItems().indexOf(currentSong) > 0)
-				previousSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex() - 1 );
+			SongMetadata nextSong = null;
+			//if selected song is the last one
+			if (songListView.getItems().indexOf(currentSong) == (songListView.getItems().size()-1)) {
+				
+				nextSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
+				setDetailView(nextSong);
+			}
+			else if (songListView.getItems().indexOf(currentSong) == 0)
+			{
+				nextSong = null;
+			}
+			else {
+				nextSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex()+1);
+				setDetailView(nextSong);
+			}
 			
-			if (previousSong != null) {
+			if (nextSong != null) {
 
-				songListView.getSelectionModel().select(previousSong);
+				songListView.getSelectionModel().select(nextSong);
 				songListView.getItems().remove(currentSong);
 				songListView.requestFocus();
 				songListView.refresh();
 
-				setDetailView(previousSong);
+				setDetailView(nextSong);
 			}
 			else {
 				songListView.getItems().remove(currentSong);
@@ -243,10 +226,16 @@ public class SongLibController {
 				lblDisplayArtist.setText("");
 				lblDisplayAlbum.setText("");
 				lblDisplayYear.setText("");
-				if (songListView.getItems().size()> 0)
-					setDetailView(songListView.getSelectionModel().getSelectedItem());
+				
 			}
 			
+			
+			
+			
+			if (songListView.getItems().size()> 0)
+				setDetailView(songListView.getSelectionModel().getSelectedItem());
+			else
+				setDetailView(new SongMetadata("","","",""));
 			
 			btnAdd.setVisible(true);
 			if (obsList.size()> 0) {
@@ -266,29 +255,126 @@ public class SongLibController {
 		}
 
 		songListView.setDisable(false);
-        try {
-			updateFile(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        songListView.requestFocus();
 		
 
 	}
 	private void saveAddSong() {
-		lblTest.setText("Saved new song");
-		SongMetadata newSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
-		obsList.add(newSong);
-		songListView.requestFocus();
-		songListView.refresh();
-		songListView.getSelectionModel().select(newSong);
 		
-						
+		String x = tfYear.getText();
+		System.out.println("[" + x + "]");
+		
+		if ((isInteger(tfYear.getText()) &&  (Integer.parseInt(tfYear.getText()) >= 0)) || x.equals("")) {
+			SongMetadata newSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
+			
+			if (!songListView.getItems().contains(newSong)) { 
+				
+				
+				obsList.add(newSong);
+				songListView.requestFocus();
+				songListView.refresh();
+				songListView.getSelectionModel().select(newSong);
+				
+								
+				disableAllTextFields();
+				enableAllLabels();
+				
+				btnAdd.setVisible(true);
+				if (obsList.size()> 0) {
+					btnEdit.setVisible(true);
+					btnDelete.setVisible(true);
+				}else{
+					btnEdit.setVisible(false);
+					btnDelete.setVisible(false);
+				}
+		        btnSave.setVisible(false);
+		        btnCancel.setVisible(false);
+		        
+		        songListView.getItems().sort(new SongCompare());
+		        songListView.setDisable(false);
+		        songListView.requestFocus();
+			} 
+			else
+			{
+				//Popup for duplicate.
+				Alert alert = new Alert(AlertType.ERROR, "The song you are trying to add already exists.");
+				alert.showAndWait();
+			}
+		}
+		else {
+			Alert alert = new Alert(AlertType.ERROR, "Year is invalid. Please try again.");
+			alert.showAndWait();
+		}
+			
+
+		
+		
+
+
+	}
+	private void saveEditSong() {
+
+		String x = tfYear.getText();
+		System.out.println("[" + x + "]");
+		
+		if ((isInteger(tfYear.getText()) &&  (Integer.parseInt(tfYear.getText()) >= 0)) || x.equals("")) {
+
+			SongMetadata editedSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
+			if (!songListView.getItems().contains(editedSong)){
+				SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
+				selectedSong.setSongAlbum(tfAlbum.getText());
+				selectedSong.setSongArtist(tfArtist.getText());
+				selectedSong.setSongName(tfName.getText());
+				selectedSong.setSongYear(tfYear.getText());
+				songListView.refresh();
+				lblDisplayName.setText(selectedSong.getSongName());
+				lblDisplayArtist.setText(selectedSong.getSongArtist());
+				lblDisplayAlbum.setText(selectedSong.getSongAlbum());
+				lblDisplayYear.setText(selectedSong.getSongYear());
+				
+				
+				
+				
+				disableAllTextFields();
+				enableAllLabels();
+				
+				btnAdd.setVisible(true);
+				if (obsList.size()> 0) {
+					btnEdit.setVisible(true);
+					btnDelete.setVisible(true);
+				}else{
+					btnEdit.setVisible(false);
+					btnDelete.setVisible(false);
+				}
+				btnSave.setVisible(false);
+				btnCancel.setVisible(false);
+				songListView.setDisable(false);
+		        songListView.requestFocus();
+			}
+			else
+			{
+				//Popup for duplicate.
+				Alert alert = new Alert(AlertType.ERROR, "The song you are trying to edit already exists.");
+				alert.showAndWait();
+			}
+		}
+		else {
+			Alert alert = new Alert(AlertType.ERROR, "Year is invalid. Please try again.");
+			alert.showAndWait();
+		}
+		
+	}
+	private void cancelButtonProcess() {
+
 		disableAllTextFields();
 		enableAllLabels();
+		tfName.setText("");
+		tfArtist.setText("");
+		tfAlbum.setText("");
+		tfYear.setText("");
 		
-		btnAdd.setVisible(true);
-		if (obsList.size()> 0) {
+        btnAdd.setVisible(true);
+        if (obsList.size()> 0) {
 			btnEdit.setVisible(true);
 			btnDelete.setVisible(true);
 		}else{
@@ -297,108 +383,52 @@ public class SongLibController {
 		}
         btnSave.setVisible(false);
         btnCancel.setVisible(false);
-
-        lblTest.setText("btnSave Complete!" + obsList.size());
         songListView.setDisable(false);
-        try {
-			updateFile(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-
-	}
-	private void saveEditSong() {
-		lblTest.setText("Saved edited song");
-		SongMetadata selectedSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
-		selectedSong.setSongAlbum(tfAlbum.getText());
-		selectedSong.setSongArtist(tfArtist.getText());
-		selectedSong.setSongName(tfName.getText());
-		selectedSong.setSongYear(tfYear.getText());
-		songListView.refresh();
-		lblDisplayName.setText(selectedSong.getSongName());
-		lblDisplayArtist.setText(selectedSong.getSongArtist());
-		lblDisplayAlbum.setText(selectedSong.getSongAlbum());
-		lblDisplayYear.setText(selectedSong.getSongYear());
-		
-		
-		
-		
-		disableAllTextFields();
-		enableAllLabels();
-		
-		btnAdd.setVisible(true);
-		if (obsList.size()> 0) {
-			btnEdit.setVisible(true);
-			btnDelete.setVisible(true);
-		}else{
-			btnEdit.setVisible(false);
-			btnDelete.setVisible(false);
-		}
-		btnSave.setVisible(false);
-		btnCancel.setVisible(false);
-		songListView.setDisable(false);
-        try {
-			updateFile(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        setDetailView(songListView.getSelectionModel().getSelectedItem());
+        songListView.refresh();
+        songListView.requestFocus();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	// FILE I/O handling
+	@SuppressWarnings("resource")
 	private void importFromFile(File file) throws IOException {
 		obsList = FXCollections.observableArrayList();
+	
+		Scanner scan;
+		try {
+			scan = new Scanner(new File(fileName));
+		} catch (Exception e) {
+			return;
+		}
 		
 		
-		String line = null;
-		String importName = "";
-		String importArtist = "";
-		String importYear = "";
-		String importAlbum = "";
-		
-		BufferedReader br = new BufferedReader(new FileReader(file));
-		
-		 String st;
-		 int lineNum = 1;
-		  while ((st = br.readLine()) != null) {
-			  switch(lineNum) {
-			  case 1:
-				  importName = st;
-				  break;
-			  case 2:
-				  importArtist = st;
-				  break;
-			  case 3:
-				  importAlbum = st;
-				  break;
-			  case 4: 
-				  importYear = st;
-				  break;
-			  default:
-				  break;
-			  }
-			 lineNum++;
-			 if (lineNum == 5) {
-				 SongMetadata importedSong = new SongMetadata(importName, importArtist, importAlbum, importYear);
-				 obsList.add(importedSong);
-				 lineNum = 1;
+		while (scan.hasNextLine()){
+			 String[] songLine = scan.nextLine().split(",");
+			 if (songLine.length != 4) {
+				System.out.println("Error: Line length is not 4. Cannot import last session.");
+				System.exit(0);
 			 }
+			 else {
+				 
+				 String a = songLine[2];
+				 String b = songLine[3];
+				 
+				 if (songLine[2].equals("null")) {
+					 a = "";
+				 }
+				 if (songLine[3].equals("null")) {
+					 b= "";
+				 }
+				 
+				 SongMetadata importedSong = new SongMetadata(songLine[0], songLine[1], a, b);
+				 obsList.add(importedSong);
+			 }
+			 
 		}
 		
 	}
-	
-	@SuppressWarnings("resource")
-	private void updateFile(File file) throws IOException{
-		file = new File(fileName);
+	public void saveToFile() throws IOException{
+		//File file = new File(fileName);
 		FileWriter fileWriter = new FileWriter(fileName);
 		PrintWriter printWriter = new PrintWriter(fileWriter);
 		
@@ -408,41 +438,57 @@ public class SongLibController {
 		for (int i = 0; i < obsList.size(); i++) {
 			SongMetadata song = obsList.get(i);
 			
-			String exportName = song.getSongName()+"\n";
-			String exportArtist = song.getSongArtist()+"\n";
-			String exportYear = song.getSongAlbum()+"\n";
-			String exportAlbum = song.getSongYear()+"\n";
-			System.out.println(song.getSongName()+"\n");
+			String exportName = song.getSongName();
+			String exportArtist = song.getSongArtist();
+			String exportAlbum = song.getSongAlbum();
+			String exportYear = song.getSongYear();
 			
-			printWriter.print(exportName);
-			printWriter.print(exportArtist);
-			printWriter.print(exportAlbum);
-			printWriter.print(exportYear);			
+			if (exportAlbum.equals("")) {
+				exportAlbum = "null";
+			}
+			
+			System.out.println("eName " + exportName + " eArtist " + exportArtist +" eAlbum " +exportAlbum + " eYear" + exportYear);
+			if (exportYear.equals("")) {
+				exportYear = "null";
+			}
+			
+			printWriter.println(exportName + "," + exportArtist + "," + exportAlbum + "," +exportYear);		
 		}
 		
 
 	    printWriter.close();
 	}
 	
-	
-	
-	
+	// Helper to check if string is an integer
+	public boolean isInteger( String input )
+	{
+
+	   try
+	   {
+	      Integer.parseInt( input );
+	      return true;
+	   }
+	   catch( Exception e )
+	   {
+	      return false;
+	   }
+	}	
 	private void setDetailView(SongMetadata song) {
 		lblDisplayName.setText(song.getSongName());
 		lblDisplayArtist.setText(song.getSongArtist());
 		lblDisplayAlbum.setText(song.getSongAlbum());
 		lblDisplayYear.setText(song.getSongYear());
 	}
-	
 	private boolean checkSongParams(String name, String artist, String album, String year) {
-		if (name == null ||  artist == null) {
-			Alert alert = new Alert(AlertType.ERROR, "Name or Artist missing. Please try again");
+		if (name.equals("") ||  artist.equals("")) {
+			Alert alert = new Alert(AlertType.ERROR, "Name or Artist missing. Please try again.");
 			alert.showAndWait();	
 			return false;
 		}
 		return true;
 	}
 	
+	// Visibility Controls for Textfields and labels
 	private void disableAllTextFields() {
 		tfName.setVisible(false);
 		tfArtist.setVisible(false);
@@ -467,14 +513,4 @@ public class SongLibController {
 		lblDisplayArtist.setVisible(true);
 		lblDisplayYear.setVisible(true);
 	}
-	
-	/*
-	private void createDummyList(){
-		songLibArr.add(new SongMetadata("Name1", "Artist 1", "Album 1", "2001"));
-		songLibArr.add(new SongMetadata("Name2", "Artist 2", "Album 2", "2002"));
-		songLibArr.add(new SongMetadata("Name3", "Artist 3", "Album 3", "2003"));
-		songLibArr.add(new SongMetadata("Name4", "Artist 4", "Album 4", "2004"));
-		songLibArr.add(new SongMetadata("Name5", "Artist 5", "Album 5", "2005"));
-
-	}*/
 }

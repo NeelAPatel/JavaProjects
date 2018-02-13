@@ -43,5 +43,17 @@ public class SongMetadata {
 		this.songYear = songYear;
 	}
 	
+	@Override
+	public boolean equals(Object item) {
+		if ( ! (item instanceof SongMetadata)) {
+			return false; // not a song. 
+		}
+		SongMetadata x = (SongMetadata) item;
+		
+		if (this.songName.equalsIgnoreCase(x.songName) &&  this.songArtist.equalsIgnoreCase(x.songArtist)) {
+			return true;
+		}
+		return false;
+	}
 	
 }

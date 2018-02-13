@@ -1,6 +1,6 @@
 package view;
 
-import app.*;
+import application.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,17 +12,12 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
-/*
- * Neel Patel 
- * Bharat Kumar
- * Spring 2018 - Software Methodology
- */
 
-public class SongLibController 
+//Bharat Kumar and Neel Patel
+
+public class Controller 
 {
 	@FXML private ListView<Song> songListView;
 	
@@ -75,7 +70,7 @@ public class SongLibController
 		btnSave.setVisible(false);
 	}
 	
-	public void hideDetails()
+	public void clearDetails()
 	{
 		lblName.setText("Name");
 		lblArtist.setText("Artist");
@@ -101,7 +96,7 @@ public class SongLibController
 	
 	public void showTextFields()
 	{
-		hideDetails();
+		clearDetails();
 		
 		tfName.setText("");
 		tfAlbum.setText("");
@@ -134,7 +129,7 @@ public class SongLibController
 		tfArtist.setPromptText("");
 		tfYear.setPromptText("");
 		
-		hideDetails();
+		clearDetails();
 		btnCancel.setVisible(false);
 	}
 	
@@ -142,9 +137,10 @@ public class SongLibController
 	{
 		showTitleLabels();
 		showTextFields();
+		clearDetails();
 		btnCancel.setVisible(true);
 		btnSave.setVisible(true);
-		btnSave.setText("Save");
+		btnSave.setText("+ Add +");
 		btnAdd.setVisible(false);
 		btnEdit.setVisible(false);
 	}
@@ -152,6 +148,7 @@ public class SongLibController
 	public void editItem()
 	{
 		showTitleLabels();
+		clearDetails();
 		showTextFields();
 		
 		tfName.setText(currentSong.getName());
@@ -171,17 +168,50 @@ public class SongLibController
 		
 		btnCancel.setVisible(true);
 		btnSave.setVisible(true);
-		btnSave.setText("Save");
+		btnSave.setText("' Edit '");
 		btnEdit.setVisible(false);
 		btnAdd.setVisible(false);
 	}
 	
 	public void editSong()
 	{
+		String name = tfName.getText();
+		String artist = tfArtist.getText();
+		String album = tfAlbum.getText();
+		String yearString = tfYear.getText();
+		int year = -1;
+		
+		if (album == null || album.equals(""))
+		{
+			album = null;
+		}
+		
+		if (!yearString.equals(""))
+		{
+			year = convertStringToInt(yearString);
+		}
+		
+		Song song = new Song(name, artist, album, year);
+		
 		try
 		{
-			database.removeSong(currentIndex);
-			addSong();
+			if (obsList.size() == 1)
+			{
+				obsList.set(0, song);
+				currentIndex = 0;
+				songListView.setItems(obsList);
+				songListView.getSelectionModel().select(currentIndex);
+			}
+			else
+			{
+				obsList.remove(currentIndex);
+				currentIndex = database.editSongWithIndex(currentIndex, song);
+				obsList.add(currentIndex, song);
+				songListView.setItems(obsList);
+				songListView.getSelectionModel().select(currentIndex);
+				showDetails(song);
+			}
+			
 		} catch(IOException ioException)
 		{
 			
@@ -283,10 +313,9 @@ public class SongLibController
 		try
 		{
 			currentIndex = database.addSongWithIndex(song);
-			insertDataIntoList();
-			songListView.requestFocus();
-			songListView.refresh();
-			songListView.getSelectionModel().select(song);
+			obsList.add(currentIndex, song);
+			songListView.setItems(obsList);
+			songListView.getSelectionModel().select(currentIndex);
 			showDetails(song);
 		} catch(IOException ioException)
 		{
@@ -347,12 +376,9 @@ public class SongLibController
 		
 		insertDataIntoList();
 		
-		//btnDelete.setLayoutX(btnCancel.getLayoutX());
-		//btnDelete.setLayoutY(btnCancel.getLayoutY());
-		if (songListView.getSelectionModel().getSelectedIndex()> 0)
-			btnDelete.setVisible(true);
-		else
-			btnDelete.setVisible(false);
+		btnDelete.setLayoutX(btnCancel.getLayoutX());
+		btnDelete.setLayoutY(btnCancel.getLayoutY());
+		btnDelete.setVisible(false);
 		
 		btnSave.setVisible(false);
 		btnCancel.setVisible(false);
@@ -375,24 +401,17 @@ public class SongLibController
 		}
 		
 		
-		//Sets listview's custom cell format
-        songListView.setCellFactory(new Callback<ListView<Song>, javafx.scene.control.ListCell<Song>>() {
-            @Override
-            public ListCell<Song> call(ListView<Song> listView)
-            {
-                return new ListViewCell();
-            }
-        });
-
-		
 		songListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Song>() 
 		{
 			@Override
 			public void changed(ObservableValue<? extends Song> observable, Song oldValue, Song newValue)
 			{
-				currentIndex = songListView.getSelectionModel().getSelectedIndex();
-				currentSong = newValue;
-				showDetails(currentSong);
+				if (obsList.size() > 0)
+				{
+					currentIndex = songListView.getSelectionModel().getSelectedIndex();
+					currentSong = newValue;
+					showDetails(currentSong);
+				}
 			}
 		});
 	}
@@ -416,62 +435,40 @@ public class SongLibController
 		{
 			try
 			{
-				Alert alert = new Alert(AlertType.CONFIRMATION, "Are you sure you want to delete this item?", ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);
-				alert.showAndWait();
-
-				if (alert.getResult() == ButtonType.YES) {
-
-					System.out.println("ATHIS IS CURRENT INDEX: " + currentIndex);
-					Song currentSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex());
-					Song previousSong;
-					if (songListView.getItems().size()> 0) {
-						previousSong = songListView.getItems().get(songListView.getSelectionModel().getSelectedIndex() - 1 ); 
-					}				
-					else {
-						previousSong = null;
-					}
-						
-					database.removeSong(currentIndex);
-					insertDataIntoList();
-					
-					if (database.getSize() == 0)
-					{
-						btnDelete.setVisible(false);
-						btnEdit.setVisible(false);
-						hideDetails();
-						lblName.setVisible(false);
-						lblArtist.setVisible(false);
-						lblAlbum.setVisible(false);
-						lblYear.setVisible(false);
-					}
-
-					System.out.println("BTHIS IS CURRENT INDEX: " + currentIndex);
-					if (currentIndex == database.getSize())
-					{
-						currentIndex = currentIndex - 1;
-					}
-
-					System.out.println("CTHIS IS CURRENT INDEX: " + currentIndex);
-					//currentSong = obsList.get(currentIndex);
-
-					System.out.println("DTHIS IS CURRENT INDEX: " + currentIndex);
-
-					
-					//songListView.getSelectionModel().select(currentSong);
-					songListView.requestFocus();
-					songListView.refresh();
-					System.out.println("ETHIS IS CURRENT INDEX: " + currentIndex);
-					songListView.getSelectionModel().select(previousSong);
-					showDetails(previousSong);
-					
-				}
-				else {
-					//Do nothing. 
-				}
-				
+				database.removeSong(currentIndex);
 			} catch(IOException ioException)
 			{
 				
+			}
+			
+			if (obsList.size() <= 1)
+			{
+				btnDelete.setVisible(false);
+				btnEdit.setVisible(false);
+
+				lblName.setVisible(false);
+				lblArtist.setVisible(false);
+				lblAlbum.setVisible(false);
+				lblYear.setVisible(false);
+				
+				clearDetails();
+				
+				obsList = FXCollections.observableArrayList();
+				songListView.setItems(obsList);
+			}
+			else
+			{
+				obsList.remove(currentIndex);
+				songListView.setItems(obsList);
+				
+				if (currentIndex == database.getSize())
+				{
+					currentIndex = currentIndex - 1;
+				}
+				
+				currentSong = obsList.get(currentIndex);
+				songListView.getSelectionModel().select(currentIndex);
+				showDetails(currentSong);
 			}
 		}
 		else if (btn == btnSave) 
@@ -479,21 +476,24 @@ public class SongLibController
 			if (actionType == 0)
 			{
 				addSong();
+				actionType = -1;
 			}
 			else if (actionType == 1)
 			{
 				editSong();
+				actionType = -1;
 			}
 		}
 		else if (btn == btnCancel)
 		{
 			btnAdd.setVisible(true);
 			
+			hideTextFields();
+			
 			if (!database.isEmpty())
 			{
 				btnEdit.setVisible(true);
 				songListView.getSelectionModel().select(currentIndex);
-				hideTextFields();
 				showDetails(currentSong);
 				actionType = -1;
 			}
@@ -502,8 +502,7 @@ public class SongLibController
 				btnEdit.setVisible(false);
 				btnDelete.setVisible(false);
 				btnEdit.setVisible(false);
-				hideDetails();
-				hideTextFields();
+				clearDetails();
 				lblName.setVisible(false);
 				lblArtist.setVisible(false);
 				lblAlbum.setVisible(false);
