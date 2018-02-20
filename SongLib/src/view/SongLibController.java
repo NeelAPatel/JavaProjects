@@ -121,7 +121,7 @@ public class SongLibController {
 			addButtonProcess(); // ADD BUTTON
 		}
 		else if (btn == btnSave) { //SAVE BUTTON
-			if (checkSongParams(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText())) {
+			if (checkSongParams(tfName.getText().trim(), tfArtist.getText().trim(), tfAlbum.getText().trim(), tfYear.getText().trim())) {
 				if (editingMode.equals("add")) 
 					saveAddSong();
 				else if (editingMode.equals("edit"))
@@ -267,7 +267,9 @@ public class SongLibController {
 		//System.out.println("[" + x + "]");
 		
 		if ((isInteger(tfYear.getText()) &&  (Integer.parseInt(tfYear.getText()) >= 0)) || x.equals("")) {
-			SongMetadata newSong = new SongMetadata(tfName.getText(), tfArtist.getText(), tfAlbum.getText(), tfYear.getText());
+
+			
+			SongMetadata newSong = new SongMetadata(tfName.getText().trim(), tfArtist.getText().trim(), tfAlbum.getText().trim(), tfYear.getText().trim());
 			
 			if (!songListView.getItems().contains(newSong)) { 
 				
@@ -393,7 +395,9 @@ public class SongLibController {
         btnSave.setVisible(false);
         btnCancel.setVisible(false);
         songListView.setDisable(false);
-        setDetailView(songListView.getSelectionModel().getSelectedItem());
+        if (!songListView.getItems().isEmpty()) {
+        	setDetailView(songListView.getSelectionModel().getSelectedItem());
+        }
         songListView.refresh();
         songListView.requestFocus();
 	}
@@ -456,7 +460,7 @@ public class SongLibController {
 					Integer.parseInt(b);
 				}
 				catch ( NumberFormatException e){
-					System.out.println("ERROR: NumberFormatException");
+					System.out.println("ERROR [Line " + lineCount + "]: NumberFormatException - Year is not properly formatted.");
 					System.exit(0);
 				}
 				SongMetadata importedSong = new SongMetadata(songLine[0], songLine[1], a, b);

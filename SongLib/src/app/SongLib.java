@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 
 
 public class SongLib extends Application {
-	
 	private SongLibController songLibController;
 	
 	@Override
