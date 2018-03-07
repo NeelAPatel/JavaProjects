@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
@@ -15,21 +14,17 @@
             <Font size="22.0" />
          </font>
       </Label>
-      <Button layoutX="121.0" layoutY="37.0" mnemonicParsing="false" text="⬆" textAlignment="CENTER" />
-      <Button fx:id="btnAdd" layoutX="169.0" layoutY="660.0" mnemonicParsing="false" onAction="#btnPress" text="Add" />
-      <Button fx:id="btnDelete" layoutX="424.0" layoutY="660.0" mnemonicParsing="false" onAction="#btnPress" text="Delete" />
-      <Label fx:id="lblSelectedName" layoutX="288.0" layoutY="664.0" text="selectedName" />
-      <ScrollPane fx:id="scrPane" layoutX="51.0" layoutY="117.0" prefHeight="249.0" prefWidth="438.0">
+      <Label fx:id="lblSelectedName" layoutX="291.0" layoutY="71.0" text="lblStatus" />
+      <Button fx:id="buttonBackUp" layoutX="121.0" layoutY="37.0" mnemonicParsing="false" text="⬆" textAlignment="CENTER" />
+      <Button fx:id="btnAdd" layoutX="189.0" layoutY="608.0" mnemonicParsing="false" onAction="#btnPress" text="Add" />
+      <Button fx:id="btnDelete" layoutX="304.0" layoutY="608.0" mnemonicParsing="false" onAction="#btnPress" text="Delete" />
+      <Button fx:id="btnUser" layoutX="618.0" layoutY="37.0" mnemonicParsing="false" text="USER" />
+      <Button fx:id="btnOpenAlbum" layoutX="287.0" layoutY="652.0" mnemonicParsing="false" text="Open Album" />
+      <Button fx:id="btnUserManagement" layoutX="509.0" layoutY="37.0" mnemonicParsing="false" text="Manage Users..." />
+      <Button fx:id="btnRenameAlbum" layoutX="427.0" layoutY="608.0" mnemonicParsing="false" text="Rename" />
+      <ScrollPane fx:id="scrPane" layoutX="30.0" layoutY="112.0" prefHeight="475.0" prefWidth="640.0">
          <content>
-            <FlowPane fx:id="flow" hgap="5.0" prefHeight="17.0" prefWidth="421.0" rowValignment="BOTTOM" vgap="5.0">
-               <children>
-               </children>
-            </FlowPane>
-         </content>
-      </ScrollPane>
-      <ScrollPane layoutX="35.0" layoutY="410.0" prefHeight="200.0" prefWidth="200.0">
-         <content>
-            <TilePane fx:id="tilePane" prefHeight="200.0" prefWidth="200.0" />
+            <FlowPane fx:id="flow" hgap="5.0" prefHeight="306.0" prefWidth="617.0" rowValignment="BOTTOM" vgap="5.0" />
          </content>
       </ScrollPane>
    </children>
