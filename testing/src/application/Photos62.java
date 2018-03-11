@@ -3,6 +3,7 @@ package application;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import controller.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,24 +20,26 @@ import javafx.scene.layout.HBox;
 
 
 
-public class Main extends Application {
+public class Photos62 extends Application {
 	
-	private Controller controller;
+	private LoginController loginController;
 	 ArrayList<Node> components = new ArrayList<Node>(); 
 	@Override
 	public void start(Stage primaryStage) throws Exception{
 			
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("Ph_LandingPage.fxml"));
+			FXMLLoader loginLoader = new FXMLLoader();
+			loginLoader.setLocation(getClass().getResource("/fxml/Ph_LoginPage.fxml"));
 			
-			AnchorPane root = (AnchorPane) loader.load();
-			controller = loader.getController();
-			controller.start(primaryStage);
+			AnchorPane root = (AnchorPane) loginLoader.load();
+			loginController = loginLoader.getController();
+			loginController.start(primaryStage);
 			
 			
-			Scene scene = new Scene(root, 700, 780);
+			
+			Scene scene = new Scene(root);
 			
 			primaryStage.setScene(scene);
+			primaryStage.setResizable(false);
 			primaryStage.show();
 			
 	}
