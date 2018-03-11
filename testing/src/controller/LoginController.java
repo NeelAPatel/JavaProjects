@@ -3,6 +3,7 @@ package controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,12 +23,25 @@ public class LoginController {
 	@FXML Label lblErrorMsg;
 	
 	Stage currStage;
+	private ArrayList<User> userList;
+	
+	/**
+	 * initializes and sets up the login page
+	 * @param mainStage 
+	 */
 	public void start(Stage mainStage) {
 		currStage = mainStage;
 		mainStage.setTitle("Photos - Login");
 		lblErrorMsg.setVisible(false);
+		
+		//open file for holding
+		
 	}
 	
+	/**
+	 * Handles button press events according to its source, and runs it's process
+	 * @param e ActionEvent
+	 */
 	@FXML
 	public void btnPress(ActionEvent e) {
 		Button btn = (Button) e.getSource();
@@ -37,6 +51,9 @@ public class LoginController {
 		}
 	}
 	
+	/**
+	 * Checks if the user is valid. 
+	 */
 	private void loginProcess() {
 		// Check if login is valid
 		
@@ -45,7 +62,7 @@ public class LoginController {
 		
 		if (myUsername.equals("admin") && myPassword.equals("admin")) {
 			lblErrorMsg.setVisible(false);
-			openAlbumPane();
+			openAlbumPane(1,new User(100, "admin", "admin"));
 	        
 		}
 		else
@@ -55,7 +72,7 @@ public class LoginController {
 				
 	}
 	
-	private void openAlbumPane() {
+	private void openAlbumPane(int isAdmin, User currUser) {
 		try {
 			
 			FXMLLoader albumLoader = new FXMLLoader();
@@ -71,6 +88,7 @@ public class LoginController {
     		
     		AlbumController albumController = albumLoader.getController();
     		albumController.setDialogStage(albumStage);
+    		albumController.setCurrentUser(isAdmin, currUser);
     		albumStage.showAndWait();
     		
     		

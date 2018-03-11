@@ -23,20 +23,24 @@ import javafx.stage.Stage;
 public class AlbumController {
 ArrayList <Node> components = new ArrayList <Node>();
 	
-	@FXML private Button btnAdd, btnDelete;
+	@FXML private Button btnAdd, btnDelete, btnOpenAlbum, btnRenameAlbum, btnUser,btnUserManagement ;
 	@FXML private Label lblStatus;
 	@FXML private FlowPane flow;
 	@FXML private ScrollPane scrPane;
 	@FXML private AnchorPane selPane, prevSelPane;
 	
 	private Stage currStage;
-	
+	private User currUser;
+	private int isAdmin;
 	
 	//@FXML btnUserManagement;
 	int NodeCounter = 0;
 	
 	public void start(Stage mainStage) {
 		mainStage.setTitle("Testing program :DD");
+		if (isAdmin != 1) {
+			btnUserManagement.setVisible(false);
+		}
 	}
 	
     public void setDialogStage(Stage dialogStage) {
@@ -164,64 +168,9 @@ ArrayList <Node> components = new ArrayList <Node>();
 		
 		flow.getChildren().add(anch);
 	}
-	/*
-	private void tileVersion2() {
-		AnchorPane anch = new AnchorPane();
-		anch.setMinWidth(150);
-		anch.setMaxWidth(150);
-		anch.setMinHeight(150);
-		anch.setMaxHeight(150);
-		
-		ImageView img = new ImageView();
-		img.setX(0);
-		img.setY(0);
-		//Rec2D (xy for size of image, xy for position it starts at
-		img.setImage(new Image(getClass().getResourceAsStream("3.png")));
-		img.setViewport(new Rectangle2D(150,150,0,0));	
-		img.setFitWidth(150);
-		img.setFitHeight(150);
-		anch.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-            	if(selected != anch){
-	            	pselected = selected;
-	            	selected = anch;
-            	}
-            	anch.setStyle("-fx-border-color: black; -fx-alignment: top-center");
-                System.out.println("Tile pressed ");
-                if(pselected != null){
-                	pselected.setStyle("-fx-alignment: top-center");
-                }else{
-                	pselected = selected;
-                }
-                event.consume();
-            }
-		});
-		img.toFront();
-		anch.getChildren().add(img);
-		
-		
-	
-		
-		Label albumName = new Label("AlbumName");
-		albumName.setLayoutX(0);
-		albumName.setLayoutY(123);
-		albumName.setMinWidth(150);
-		albumName.setMinHeight(27);
-		albumName.setMaxWidth(150);
-		albumName.setMaxHeight(27);
-		
-		albumName.setTextFill(Color.WHITE);
-		anch.getChildren().add(albumName);
-		
-		Label numOfPics = new Label("##");
-		numOfPics.setLayoutX(0);
-		numOfPics.setLayoutY(105);
-		anch.getChildren().add(numOfPics);
-		
-		
-		
-		flow.getChildren().add(anch);
+
+	public void setCurrentUser(int isAdmin, User currUser) {
+		this.currUser = currUser;
+		this.isAdmin = isAdmin;
 	}
-	*/
 }

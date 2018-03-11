@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"controller","l":"AlbumController"},{"p":"extra","l":"Example"},{"p":"extra","l":"ImageGallery"},{"p":"controller","l":"LoginController"},{"p":"application","l":"Photos62"}]

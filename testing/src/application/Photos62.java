@@ -24,7 +24,12 @@ public class Photos62 extends Application {
 	
 	private LoginController loginController;
 	 ArrayList<Node> components = new ArrayList<Node>(); 
+	
+	 
 	@Override
+	/**
+	 * Starts the program
+	 */
 	public void start(Stage primaryStage) throws Exception{
 			
 			FXMLLoader loginLoader = new FXMLLoader();
